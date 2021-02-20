@@ -37,7 +37,7 @@ if (PRODUCTION) {
 }
 
 module.exports = {
-  mode: "development",
+  mode: PRODUCTION ? "production" : "development",
 
   entry: "./src/index.js",
   output: {
@@ -90,7 +90,8 @@ module.exports = {
           name: "vendors"
         }
       }
-    }
+    },
+    usedExports: true
   },
 
   devServer: {
