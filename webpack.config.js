@@ -1,10 +1,11 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
-  .BundleAnalyzerPlugin;
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 const PROFILER = process.env.PROFILER === "true";
+const PRODUCTION = process.env.PRODUCTION === "true";
 
 const plugins = [
   new CleanWebpackPlugin({ cleanStaleWebpackAssets: false }),
@@ -24,13 +25,23 @@ if (PROFILER) {
   );
 }
 
+if (PRODUCTION) {
+  plugins.push(
+    new MiniCssExtractPlugin({
+      filename: "[name].[contenthash].css",
+      chunkFilename: "[id].[contenthash].css"
+    })
+  );
+}
+
 module.exports = {
   mode: "development",
 
   entry: "./src/index.js",
   output: {
     filename: "[name].bundle.js",
-    path: path.resolve(__dirname, "dist")
+    path: path.resolve(__dirname, "dist"),
+    publicPath: ""
   },
 
   devtool: "inline-source-map",
@@ -43,7 +54,7 @@ module.exports = {
         test: /\.s?css$/i,
         use: [
           {
-            loader: "style-loader"
+            loader: PRODUCTION ? MiniCssExtractPlugin.loader : "style-loader"
           },
           {
             loader: "css-loader",
