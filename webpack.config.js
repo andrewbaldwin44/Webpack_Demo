@@ -39,12 +39,12 @@ module.exports = {
 
   entry: "./src/index.js",
   output: {
-    filename: "[name].bundle.js",
+    filename: "[name].[contenthash].js",
     path: path.resolve(__dirname, "dist"),
     publicPath: ""
   },
 
-  devtool: "inline-source-map",
+  devtool: PRODUCTION ? "source-map" : "eval-cheap-module-source-map",
 
   plugins,
 
@@ -78,8 +78,16 @@ module.exports = {
   },
 
   optimization: {
+    moduleIds: "deterministic",
     splitChunks: {
-      chunks: "all"
+      chunks: "all",
+      cacheGroups: {
+        defaultVendors: {
+          test: /[\\/]node_modules[\\/]/,
+          enforce: true,
+          name: "vendors"
+        }
+      }
     }
   },
 
