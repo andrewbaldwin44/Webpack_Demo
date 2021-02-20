@@ -1,4 +1,5 @@
 const path = require("path");
+const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
@@ -6,6 +7,7 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 const PROFILER = process.env.PROFILER === "true";
 const PRODUCTION = process.env.PRODUCTION === "true";
+const SHARE = process.env.SHARE === "true";
 
 const plugins = [
   new CleanWebpackPlugin({ cleanStaleWebpackAssets: false }),
@@ -92,6 +94,8 @@ module.exports = {
   },
 
   devServer: {
-    contentBase: "./dist"
+    host: "localhost",
+    port: 3000,
+    open: SHARE
   }
 };
