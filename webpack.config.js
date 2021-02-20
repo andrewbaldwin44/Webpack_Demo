@@ -1,6 +1,28 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
+  .BundleAnalyzerPlugin;
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+
+const PROFILER = process.env.PROFILER === "true";
+
+const plugins = [
+  new CleanWebpackPlugin({ cleanStaleWebpackAssets: false }),
+  new HtmlWebpackPlugin()
+];
+
+if (PROFILER) {
+  plugins.push(
+    new BundleAnalyzerPlugin({
+      analyzerMode: "static",
+      openAnalyzer: true,
+      generateStatsFile: true,
+      defaultSizes: "gzip",
+      statsOptions: { source: false },
+      reportFilename: path.join(__dirname, "profiler/report.html")
+    })
+  );
+}
 
 module.exports = {
   mode: "development",
@@ -13,10 +35,7 @@ module.exports = {
 
   devtool: "inline-source-map",
 
-  plugins: [
-    new CleanWebpackPlugin({ cleanStaleWebpackAssets: false }),
-    new HtmlWebpackPlugin()
-  ],
+  plugins,
 
   module: {
     rules: [
@@ -45,6 +64,12 @@ module.exports = {
         type: "asset/resource"
       }
     ]
+  },
+
+  optimization: {
+    splitChunks: {
+      chunks: "all"
+    }
   },
 
   devServer: {
